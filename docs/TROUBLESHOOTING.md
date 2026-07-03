@@ -46,5 +46,20 @@ To preserve institutional knowledge of every failure mode we encountered while b
 - **Diagnosis**: `ssh -T git@github.com`.
 - **Resolution**: Add `/home/csky/.ssh/id_ed25519.pub` to GitHub.
 
+### 7. Prisma/OpenSSL Incompatibility
+- **Symptoms**: Node app crashes with `Error loading shared library libssl.so.3` on Alpine.
+- **Root Cause**: Alpine does not include OpenSSL by default, which Prisma requires.
+- **Resolution**: Add `apk add --no-cache openssl` to the Dockerfile and configure `binaryTargets = ["native", "linux-musl-openssl-3.0.x"]` in `schema.prisma`.
+
+### 8. HTTPS Certificate Generation Fails
+- **Symptoms**: SSL certificate invalid or browser warns of insecure connection.
+- **Root Cause**: Let's Encrypt could not verify domain ownership.
+- **Resolution**: Ensure DNS A records point to the VPS IP. Verify `LETSENCRYPT_HOST` and `LETSENCRYPT_EMAIL` exist in the compose file. Check logs: `docker logs nginx-proxy-acme`.
+
+### 9. Orphan Containers
+- **Symptoms**: Warning `Found orphan containers` during `docker compose up`.
+- **Root Cause**: A service was removed from the compose file, but the container is still running.
+- **Resolution**: Run `docker compose up -d --remove-orphans`.
+
 ## Related Documentation
 - [Disaster Recovery](DISASTER_RECOVERY.md)
