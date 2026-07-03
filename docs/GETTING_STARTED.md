@@ -25,7 +25,7 @@ This guide links together our more detailed, specialized documentation into a li
    Familiarize yourself with [OPERATIONS.md](OPERATIONS.md) for daily management commands.
 
 ## Common Mistakes
-- **Skipping the architecture read**: Assuming standard Docker Compose tutorials apply here. We have strict standards (like dynamically grabbing PUID/PGID instead of assuming 1000, and `infra/` folders) that diverge from typical hobbyist setups.
+- **Skipping the architecture read**: Assuming standard Docker Compose tutorials apply here. We have strict standards (like explicitly mapping the host deployment user's PUID/PGID instead of assuming 1000, and `infra/` folders) that diverge from typical hobbyist setups.
 
 ## Troubleshooting
 - If you get stuck anywhere, refer to [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
