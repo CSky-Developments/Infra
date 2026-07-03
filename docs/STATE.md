@@ -10,6 +10,7 @@ It ensures we always know exactly what has been configured and what is pending.
 - [x] Basic backup/restore scripts created
 - [x] VPS Setup documentation created
 - [x] Created the external `proxy` Docker network on the VPS
+- [x] Architectural decisions documented (`ARCHITECTURE.md`)
 
 ## Pending / Planned Work
 - [ ] Apply security hardening on the VPS (SSH restrictions and Fail2Ban)
