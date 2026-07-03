@@ -63,7 +63,40 @@ cat /home/csky/.ssh/id_ed25519.pub
 sudo -u csky ssh -T git@github.com
 ```
 
+### 7. GHCR Authentication
+The VPS must be able to pull private Docker images from the GitHub Container Registry.
+```bash
+echo "YOUR_GITHUB_PAT" | sudo -u csky docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+### 8. Clone Infrastructure Repository
 Clone the infrastructure repository to `/srv/infra`.
+```bash
+sudo -u csky git clone git@github.com:csky-developments/infra.git /srv/infra
+```
+
+### 9. Reverse Proxy Deployment
+Deploy the `nginx-proxy` and `acme-companion` stack first so it can route incoming traffic.
+```bash
+cd /srv/infra/proxy
+sudo -u csky docker compose up -d
+```
+
+### 10. Service Deployment
+Clone and deploy your first application service.
+```bash
+sudo -u csky git clone git@github.com:csky-developments/discord-bot.git /srv/services/discord-bot
+cd /srv/services/discord-bot/infra
+# Configure .env with PUID/PGID and tokens
+sudo -u csky docker compose up -d
+```
+
+### 11. HTTPS and Deployment Verification
+Verify that the reverse proxy successfully issued a Let's Encrypt certificate and routed the traffic:
+```bash
+curl -I https://your-service-domain.com
+```
+Execute the [Deployment Verification Checklist](DEPLOYMENT_VERIFICATION.md) to ensure all components are healthy.
 
 ## Common Mistakes
 - Locking yourself out by disabling password authentication before adding your SSH key.
