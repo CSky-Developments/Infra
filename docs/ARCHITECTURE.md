@@ -19,5 +19,30 @@ This document records the major architectural decisions for the production VPS i
 - **Reasoning**: Simplicity. The current scale only requires a single VPS. Adding orchestration would introduce massive operational overhead without providing immediate business value.
 
 ## 5. Filesystem Permissions & Security Standard
-- **Decision**: All application containers must map their runtime user to the host's `deploy` user via the Compose `user: "${PUID:-1000}:${PGID:-1000}"` directive. Containers must never run as root.
-- **Reasoning**: This permanently eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. The container process reads and writes directly as the host user, ensuring seamless persistent data management.
+- **Decision**: All application containers must map their runtime user to the host's `deploy` user via the Compose `user: "${PUID}:${PGID}"` directive. Containers must never run as root.
+- **Reasoning**: This eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. By dropping default values, we enforce a "fail fast" methodology: if PUID/PGID are missing from the `.env`, the deployment fails immediately rather than silently running under the wrong ID.
+
+## 6. Container Filesystem Standard
+Every CSky service follows these rules:
+- Persistent application data lives in `./data`
+- Secrets live in `.env`
+- Containers run as `${PUID}:${PGID}`
+- The host owns all files under `/srv/services`
+- Services must not require `chmod 777` or permission-fix scripts
+- Temporary files should be written to `/tmp` whenever persistence is unnecessary
+
+## 7. Service Directory Layout
+Every service across the entire platform must follow this exact repository structure. No exceptions:
+```text
+/srv/services/<service>/
+│
+├── infra/
+│   ├── docker-compose.yml
+│   ├── .env
+│   └── data/
+│
+├── src/
+├── Dockerfile
+└── ...
+```
+This guarantees instant familiarity and uniformity across all projects when managing the server.

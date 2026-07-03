@@ -3,7 +3,7 @@
 This document outlines the migration plan for updating existing CSky services to the official PUID/PGID deployment standard without breaking existing persistent data.
 
 ## Goal
-Transition all existing services to use the `user: "${PUID:-1000}:${PGID:-1000}"` directive in Docker Compose, ensuring containers no longer run as root or use hardcoded UIDs, and permanently fixing bind-mount permissions.
+Transition all existing services to use the `user: "${PUID}:${PGID}"` directive in Docker Compose, ensuring containers no longer run as root or use hardcoded UIDs, and permanently fixing bind-mount permissions.
 
 ## Why this is better than hardcoded UIDs or root
 - **Security**: Containers no longer run as root, drastically reducing the impact of container escapes.
@@ -15,30 +15,30 @@ Transition all existing services to use the `user: "${PUID:-1000}:${PGID:-1000}"
 1. **Identify Existing Ownership**
    First, identify who currently owns the existing persistent data on the host. 
    ```bash
-   ls -la /srv/services/<app-name>/data
+   ls -la /srv/services/<app-name>/infra/data
    ```
    If it's owned by `root` (because the container ran as root), we must fix it on the host before migrating.
 
 2. **Stop the Service**
    ```bash
-   cd /srv/services/<app-name>
+   cd /srv/services/<app-name>/infra
    docker compose down
    ```
 
 3. **Update the Configuration**
-   Update the service's `docker-compose.yml` to include the standard user directive on any container that mounts host volumes:
+   Update the service's `infra/docker-compose.yml` to include the standard user directive on any container that mounts host volumes:
    ```yaml
    services:
      app:
        # ... other config ...
-       user: "${PUID:-1000}:${PGID:-1000}"
+       user: "${PUID}:${PGID}"
    ```
    Add a `.env` file if it doesn't exist, setting `PUID` and `PGID` to match the `deploy` user (usually 1000:1000). You can verify the host user's ID by running `id -u` and `id -g`.
 
 4. **Correct Host Permissions**
    Recursively chown the application's bind-mounted directories to the `deploy` user so the newly unprivileged container can write to them.
    ```bash
-   sudo chown -R deploy:deploy /srv/services/<app-name>/data
+   sudo chown -R deploy:deploy /srv/services/<app-name>/infra/data
    ```
 
 5. **Restart the Service**

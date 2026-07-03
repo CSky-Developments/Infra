@@ -23,14 +23,14 @@ By mapping the container's executing user directly to the host's `deploy` user, 
 ```bash
 git clone <your-repo-url> /srv/services/my-app
 ```
-2. Ensure the `docker-compose.yml` inside that repository is configured to be picked up by the proxy:
+2. Ensure the `infra/docker-compose.yml` inside that repository is configured to be picked up by the proxy:
 
 ```yaml
 version: '3.8'
 services:
   app:
     image: my-app:latest
-    user: "${PUID:-1000}:${PGID:-1000}"
+    user: "${PUID}:${PGID}"
     networks:
       - proxy
       - default # internal
@@ -46,7 +46,7 @@ networks:
 
 4. Start or update the service:
 ```bash
-cd /srv/services/my-app
+cd /srv/services/my-app/infra
 git pull  # if updating an existing deployment
 docker compose up -d
 ```
