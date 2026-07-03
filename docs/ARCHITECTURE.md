@@ -17,3 +17,7 @@ This document records the major architectural decisions for the production VPS i
 ## 4. Single-Node Focus
 - **Decision**: No Kubernetes, Docker Swarm, or complex orchestration.
 - **Reasoning**: Simplicity. The current scale only requires a single VPS. Adding orchestration would introduce massive operational overhead without providing immediate business value.
+
+## 5. Filesystem Permissions & Security Standard
+- **Decision**: All application containers must map their runtime user to the host's `deploy` user via the Compose `user: "${PUID:-1000}:${PGID:-1000}"` directive. Containers must never run as root.
+- **Reasoning**: This permanently eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. The container process reads and writes directly as the host user, ensuring seamless persistent data management.
