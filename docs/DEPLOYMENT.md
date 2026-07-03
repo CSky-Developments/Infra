@@ -1,65 +1,56 @@
 # Deployment Workflow
 
-This repository relies on Docker Compose and `nginx-proxy` to manage services. 
-Each service lives in its own directory on the server (or its own repository) with its own `docker-compose.yml`.
+## Why does this exist?
+To document the standard operating procedure for deploying, updating, and rolling back CSky services.
 
-## Global Network
+## When should it be used?
+During any manual deployment phase, or when configuring automated CI/CD.
 
-We use an external Docker network named `proxy` to connect applications to the reverse proxy. Each application should also define its own private internal network (often the default for compose) for communication between its own components (like a web app and its database).
+## How does it work?
+We treat the VPS as a collection of Git repositories. Deployments are executed by pulling the latest code and restarting the compose stack.
 
-## The CSky Permissions Standard
+## Step-by-Step Instructions
 
-To eliminate bind-mount permission issues and ensure a secure, uniform environment, all CSky services must follow this official standard:
+### Deploying a New Service
+1. SSH into the VPS as `deploy`.
+2. `git clone <repo> /srv/services/<app-name>`
+3. Set up `.env` inside `/srv/services/<app-name>/infra/` (must include PUID/PGID).
+4. `cd /srv/services/<app-name>/infra && docker compose up -d`
 
-1. **Never run as root:** Application containers must not run as the root user.
-2. **Dynamic User Mapping:** Do not hardcode UIDs/GIDs in Dockerfiles. Instead, use the native Docker Compose `user:` directive to pass the host user's UID and GID dynamically.
-3. **Environment Variables:** Use `PUID` and `PGID` variables in your `.env` file to map the host deployment user to the container.
-
-By mapping the container's executing user directly to the host's `deploy` user, the container natively owns the files it creates in the bind-mounted directories. No `chmod 777`, no entrypoint chown scripts, and no manual post-deployment fix-ups are required.
-
-## Deploying a New Service
-
-1. Clone your application's Git repository into the services directory (e.g., `/srv/services/my-app`):
+### Updating a Service
 ```bash
-git clone <your-repo-url> /srv/services/my-app
-```
-2. Ensure the `infra/docker-compose.yml` inside that repository is configured to be picked up by the proxy:
-
-```yaml
-version: '3.8'
-services:
-  app:
-    image: my-app:latest
-    user: "${PUID}:${PGID}"
-    networks:
-      - proxy
-      - default # internal
-    environment:
-      - VIRTUAL_HOST=app.mydomain.com
-      - LETSENCRYPT_HOST=app.mydomain.com
-      # - VIRTUAL_PORT=3000 # Uncomment if your app doesn't listen on port 80
-
-networks:
-  proxy:
-    external: true
-```
-
-4. Start or update the service:
-```bash
-cd /srv/services/my-app/infra
-git pull  # if updating an existing deployment
-docker compose up -d
-```
-
-The `nginx-proxy` will automatically detect the new container, generate a Let's Encrypt certificate for `app.mydomain.com` (assuming DNS is configured), and start routing traffic to it.
-
-## Updating the Infrastructure
-
-To update the reverse proxy or infrastructure scripts, pull the latest changes in the infrastructure repository:
-
-```bash
-cd /srv/infra
+cd /srv/services/<app-name>/infra
 git pull
-cd proxy
+docker compose pull
 docker compose up -d
 ```
+
+### Rolling Back
+```bash
+cd /srv/services/<app-name>/infra
+git checkout <previous-commit-hash>
+docker compose up -d
+```
+
+### Viewing Logs
+```bash
+cd /srv/services/<app-name>/infra
+docker compose logs -f
+```
+
+### Updating Docker Engine
+```bash
+sudo apt update && sudo apt upgrade docker-ce docker-compose-plugin -y
+sudo systemctl restart docker
+```
+
+## Common Mistakes
+- **Running `docker compose up` outside the `infra/` folder.**
+- **Forgetting `docker compose pull`**: If you update `latest` in GHCR, you must pull it on the VPS before restarting.
+
+## Troubleshooting
+- **Restarting a container**: `docker compose restart <service-name>`
+- **Checking health**: `docker ps`
+
+## Related Documentation
+- [Operations](OPERATIONS.md)
