@@ -1,48 +1,59 @@
-# Architectural Decisions
+# Architecture & Platform History
 
-This document records the major architectural decisions for the production VPS infrastructure and the reasoning behind them.
+## Why does this exist?
+To document the fundamental design philosophy of the CSky platform and preserve the history of major architectural decisions.
 
-## 1. Directory Structure (`/srv` standard)
-- **Decision**: All infrastructure configuration is deployed to `/srv/infra`, and all containerized applications are deployed to `/srv/services/<app-name>`.
-- **Reasoning**: Standardization. `/srv` is the FHS standard for site-specific data served by the system. It cleanly separates our Docker services from generic system binaries (`/opt`) or user home directories.
+## When should it be used?
+When proposing systemic changes, onboarding engineers, or resolving disputes about "the right way" to build a service.
 
-## 2. Reverse Proxy Layer
-- **Decision**: We use `nginx-proxy` and `acme-companion` as the shared edge router.
-- **Reasoning**: It is simple, proven, and requires zero manual configuration for new services. It automatically routes traffic and generates Let's Encrypt certificates by reading Docker socket events. We chose this over Traefik or Caddy to minimize complexity and abstraction for a single-node VPS.
+## Platform History & Major Decisions
 
-## 3. Network Isolation
-- **Decision**: We use a dedicated external Docker network named `proxy` strictly for routing external traffic from the proxy to the applications.
-- **Reasoning**: Explicit network boundaries. Instead of relying on the default Docker bridge, the `proxy` network connects only the edge router and frontend application containers. Backend services (like databases) remain on isolated internal networks (the default network generated per compose file) for maximum security.
+### 1. Separation of Infra and Services
+- **Decision**: The `infra` repository manages the proxy and server-level scripts, while each application has its own isolated repository deployed in `/srv/services`.
+- **Why**: Blast radius. An error in an application deployment should never take down the reverse proxy or affect the deployment of other services.
 
-## 4. Single-Node Focus
-- **Decision**: No Kubernetes, Docker Swarm, or complex orchestration.
-- **Reasoning**: Simplicity. The current scale only requires a single VPS. Adding orchestration would introduce massive operational overhead without providing immediate business value.
+### 2. Standardization on `/srv`
+- **Decision**: All configurations go to `/srv/infra` and apps to `/srv/services`.
+- **Why**: FHS (Filesystem Hierarchy Standard) compliance. `/srv` is specifically intended for site-specific data served by the system, keeping our Docker data cleanly separated from OS binaries (`/opt`) and user data (`/home`).
 
-## 5. Filesystem Permissions & Security Standard
-- **Decision**: All application containers must map their runtime user to the host's `deploy` user via the Compose `user: "${PUID}:${PGID}"` directive. Containers must never run as root.
-- **Reasoning**: This eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. By dropping default values, we enforce a "fail fast" methodology: if PUID/PGID are missing from the `.env`, the deployment fails immediately rather than silently running under the wrong ID.
+### 3. External Proxy Network
+- **Decision**: We use an external Docker network named `proxy`.
+- **Why**: Security and isolation. Instead of dumping everything on the default bridge, the `proxy` network securely bridges the edge router to frontend containers, while databases stay on isolated internal compose networks.
 
-## 6. Container Filesystem Standard
-Every CSky service follows these rules:
-- Persistent application data lives in `./data`
-- Secrets live in `.env`
-- Containers run as `${PUID}:${PGID}`
-- The host owns all files under `/srv/services`
-- Services must not require `chmod 777` or permission-fix scripts
-- Temporary files should be written to `/tmp` whenever persistence is unnecessary
+### 4. CI/CD via GitHub Actions and GHCR
+- **Decision**: Images are built via GitHub Actions and stored in GHCR (GitHub Container Registry).
+- **Why**: Simplifies secret management and natively integrates with our source code. It prevents the VPS from wasting CPU cycles building images locally.
 
-## 7. Service Directory Layout
-Every service across the entire platform must follow this exact repository structure. No exceptions:
-```text
-/srv/services/<service>/
-│
-├── infra/
-│   ├── docker-compose.yml
-│   ├── .env
-│   └── data/
-│
-├── src/
-├── Dockerfile
-└── ...
+### 5. PUID/PGID Standardization
+- **Decision**: All containers map host users via `user: "${PUID}:${PGID}"`.
+- **Why**: It natively solves Docker bind-mount permissions without insecure `chmod 777` or complex entrypoint scripts. The container process reads and writes exactly as the `deploy` user. We "fail fast" without defaults.
+
+### 6. Services Own Their `infra` Folder
+- **Decision**: Every service repository contains an `infra/` directory holding its `docker-compose.yml` and `data/`.
+- **Why**: Unifies the infrastructure-as-code pattern at the service level. An engineer can look at any repository and immediately know where the deployment configuration lives.
+
+## Architecture Diagram
+```mermaid
+graph TD
+    User((User)) --> Proxy[Nginx Reverse Proxy]
+    Proxy --> AppA[Service A Frontend]
+    Proxy --> AppB[Service B Frontend]
+    
+    subgraph Service A Network
+        AppA --> DB_A[(Database A)]
+    end
+    
+    subgraph Service B Network
+        AppB --> DB_B[(Database B)]
+    end
 ```
-This guarantees instant familiarity and uniformity across all projects when managing the server.
+
+## Common Mistakes
+- **Blurring the lines**: Trying to deploy an application's database inside the `infra` repository instead of the service's own `infra/` folder.
+
+## Troubleshooting
+- See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for architectural failure modes.
+
+## Related Documentation
+- [Service Standard](SERVICE_STANDARD.md)
+- [Permissions](PERMISSIONS.md)
