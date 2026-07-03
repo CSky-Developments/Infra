@@ -9,9 +9,9 @@ It ensures we always know exactly what has been configured and what is pending.
 - [x] Path standardization (`/srv/infra`, `/srv/services`)
 - [x] Basic backup/restore scripts created
 - [x] VPS Setup documentation created
+- [x] Created the external `proxy` Docker network on the VPS
 
 ## Pending / Planned Work
 - [ ] Apply security hardening on the VPS (SSH restrictions and Fail2Ban)
-- [ ] Create the external `proxy` Docker network on the VPS
 - [ ] Configure automatic security updates (unattended-upgrades) for the VPS
 - [ ] Scaffold the first actual application
