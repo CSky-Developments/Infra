@@ -16,6 +16,8 @@ This repository is the **single source of truth** for the intended infrastructur
    3. The next logical step.
    4. Affected documentation.
    5. Commit details (using Conventional Commits).
+6. **Never Redesign Infrastructure**: Inherit standards instead of redefining them.
+7. **Verify Deployments**: Executing the Deployment Verification Checklist is mandatory after deploying.
 
 ## Architecture Context
 
@@ -30,6 +32,11 @@ This repository is the **single source of truth** for the intended infrastructur
   - Individual applications use the `proxy` network for external traffic, and their own default internal networks for secure backend communication.
 - **Permissions (PUID/PGID)**:
   - All application containers *must* define `user: "${PUID}:${PGID}"` in their compose files to prevent bind-mount permission errors. We strictly fail-fast with no default values (`${PUID:-1000}` is forbidden).
+  - Never assume UID 1000.
+- **Proxy Environment**:
+  - Public HTTP services require reverse proxy variables (`VIRTUAL_HOST`, `VIRTUAL_PORT`, `LETSENCRYPT_HOST`, `LETSENCRYPT_EMAIL`).
+- **Databases**:
+  - Production migrations are deploy-only. Production servers must never generate migrations.
 
 ## State and Tracking
 
