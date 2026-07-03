@@ -9,7 +9,7 @@ This repository is the **single source of truth** for the intended infrastructur
 1. **Reality First**: If the user states a task is completed on the VPS, assume it is true and update the repo immediately. Do not mark planned tasks as completed until they are actually executed on the VPS.
 2. **Inspect Before Changing**: Always review existing files and configurations before proposing architectural shifts.
 3. **Be Opinionated**: Do not blindly follow instructions if they introduce complexity, security risks, or poor maintainability. Propose better alternatives, explain the trade-offs, and wait for approval for major shifts.
-4. **Simplicity Over Abstraction**: Favor the simplest solution for today's problems. Do not over-engineer or build for hypothetical scale (no Kubernetes, Swarm, CI/CD pipelines unless explicitly requested).
+4. **Simplicity Over Abstraction**: Favor the simplest solution for today's problems. Do not over-engineer or build for hypothetical scale (no Kubernetes, Swarm). We now explicitly use GitHub Actions and GHCR for CI/CD deployments.
 5. **Workflow Routine**: At the end of every task, provide a 5-step summary:
    1. What changed.
    2. Why it changed.
@@ -22,12 +22,18 @@ This repository is the **single source of truth** for the intended infrastructur
 - **Target**: A single Ubuntu VPS.
 - **Directory Structure**: 
   - `/srv/infra` -> Contains this repository (infrastructure code).
-  - `/srv/services/<app-name>` -> Contains individual application directories.
-- **Proxy**: We use `nginx-proxy` and `acme-companion` located in `proxy/` to automatically manage routing and Let's Encrypt SSL certificates.
+  - `/srv/services/<app-name>` -> Contains individual application repositories.
+  - **Crucially**: Every service repository *must* store its compose file and bind-mount data inside an `infra/` subdirectory (e.g. `/srv/services/app/infra/docker-compose.yml`).
+- **Proxy**: We use `nginx-proxy` and `acme-companion` located in `/srv/infra/proxy/` to automatically manage routing and Let's Encrypt SSL certificates.
 - **Networking**: 
   - Edge router traffic uses an explicit, external Docker network named `proxy`.
-  - Individual applications use the `proxy` network for external traffic, and their own default internal networks for secure backend communication (e.g., app-to-database).
+  - Individual applications use the `proxy` network for external traffic, and their own default internal networks for secure backend communication.
+- **Permissions (PUID/PGID)**:
+  - All application containers *must* define `user: "${PUID}:${PGID}"` in their compose files to prevent bind-mount permission errors. We strictly fail-fast with no default values (`${PUID:-1000}` is forbidden).
 
 ## State and Tracking
 
-Always refer to `docs/STATE.md` for a checklist of what is currently completed on the physical VPS and what is pending. Refer to `docs/ARCHITECTURE.md` for in-depth reasoning behind technical choices. Keep both files strictly synchronized with the conversation.
+The `docs/` folder is now a fully-fledged Internal Engineering Wiki. 
+- Refer to `docs/STATE.md` for a checklist of completed VPS tasks.
+- Refer to `docs/ARCHITECTURE.md` and `docs/SERVICE_STANDARD.md` for hard rules governing how services are built.
+- Keep all documentation in `docs/` strictly synchronized with the reality of the platform.
