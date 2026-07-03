@@ -1,19 +1,19 @@
 # Infrastructure State Tracker
 
-This document provides a high-level view of the current state of our production infrastructure setup. 
+This document provides a high-level view of the current state of our production infrastructure setup.
 It ensures we always know exactly what has been configured and what is pending.
 
 ## Completed
-- [x] Initial repository scaffolding
-- [x] Reverse Proxy configuration (`nginx-proxy` + `acme-companion`)
-- [x] Path standardization (`/srv/infra`, `/srv/services`)
-- [x] Basic backup/restore scripts created
-- [x] VPS Setup documentation created
-- [x] Created the external `proxy` Docker network on the VPS
-- [x] Architectural decisions documented (`ARCHITECTURE.md`)
-- [x] AI agent context documented (`AGENTS.md`)
 
-## Pending / Planned Work
-- [ ] Apply security hardening on the VPS (SSH restrictions and Fail2Ban)
-- [ ] Configure automatic security updates (unattended-upgrades) for the VPS
-- [ ] Scaffold the first actual application
+- [x] Ubuntu configured
+- [x] Docker installed
+- [x] Docker Compose installed
+- [x] Docker network `proxy` created
+- [x] Reverse proxy deployed
+- [x] Let's Encrypt companion deployed
+- [x] Infrastructure repository moved to `/srv/infra`
+- [x] GitHub SSH authentication configured
+
+## Next
+
+- [ ] Deploy first application
