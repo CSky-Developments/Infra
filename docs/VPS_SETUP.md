@@ -38,11 +38,12 @@ ufw enable
 
 ## 4. Install Docker and Docker Compose
 
-Install Docker engine:
+Install Docker engine and create the shared `proxy` network:
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 usermod -aG docker deploy
+docker network create proxy
 ```
 
 ## 5. Setup Project Directories

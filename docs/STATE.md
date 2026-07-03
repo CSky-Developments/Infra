@@ -12,5 +12,6 @@ It ensures we always know exactly what has been configured and what is pending.
 
 ## Pending / Planned Work
 - [ ] Apply security hardening on the VPS (SSH restrictions and Fail2Ban)
+- [ ] Create the external `proxy` Docker network on the VPS
 - [ ] Configure automatic security updates (unattended-upgrades) for the VPS
 - [ ] Scaffold the first actual application

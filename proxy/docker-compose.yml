@@ -14,7 +14,8 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    network_mode: bridge
+    networks:
+      - proxy
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -28,7 +29,8 @@ services:
       - certs:/etc/nginx/certs
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    network_mode: bridge
+    networks:
+      - proxy
     depends_on:
       - nginx-proxy
 
@@ -38,3 +40,7 @@ volumes:
   html:
   certs:
   acme:
+
+networks:
+  proxy:
+    external: true

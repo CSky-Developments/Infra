@@ -5,7 +5,7 @@ Each service lives in its own directory on the server (or its own repository) wi
 
 ## Global Network
 
-By default, `nginx-proxy` uses the standard bridge network. To make your services accessible to the proxy, they just need to be on the same Docker network as the proxy, or you can map the ports. However, `nginx-proxy` monitors the Docker socket, so it can route to any container exposing a port.
+We use an external Docker network named `proxy` to connect applications to the reverse proxy. Each application should also define its own private internal network (often the default for compose) for communication between its own components (like a web app and its database).
 
 ## Deploying a New Service
 
@@ -18,10 +18,17 @@ version: '3.8'
 services:
   app:
     image: my-app:latest
+    networks:
+      - proxy
+      - default # internal
     environment:
       - VIRTUAL_HOST=app.mydomain.com
       - LETSENCRYPT_HOST=app.mydomain.com
       # - VIRTUAL_PORT=3000 # Uncomment if your app doesn't listen on port 80
+
+networks:
+  proxy:
+    external: true
 ```
 
 4. Start the service:
