@@ -31,12 +31,13 @@ sh get-docker.sh
 usermod -aG docker deploy
 ```
 
-## 4. Setup Project Directory
+## 4. Setup Project Directories
 
-Create the directory where the infrastructure will live:
+Create the directory where the infrastructure and services will live:
 ```bash
-mkdir -p /opt/infra
-chown deploy:deploy /opt/infra
+mkdir -p /srv/infra
+mkdir -p /srv/services
+chown -R deploy:deploy /srv/infra /srv/services
 ```
 
-You are now ready to switch to the `deploy` user, clone this repository to `/opt/infra`, and start the proxy.
+You are now ready to switch to the `deploy` user, clone this repository to `/srv/infra`, and start the proxy from `/srv/infra/proxy`.

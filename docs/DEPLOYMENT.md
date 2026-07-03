@@ -9,7 +9,7 @@ By default, `nginx-proxy` uses the standard bridge network. To make your service
 
 ## Deploying a New Service
 
-1. Create a directory for your service (e.g., `/opt/services/my-app`).
+1. Create a directory for your service (e.g., `/srv/services/my-app`).
 2. Create a `docker-compose.yml` in that directory.
 3. Configure it to be picked up by the proxy:
 
@@ -26,7 +26,7 @@ services:
 
 4. Start the service:
 ```bash
-cd /opt/services/my-app
+cd /srv/services/my-app
 docker compose up -d
 ```
 

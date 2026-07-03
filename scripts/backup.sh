@@ -2,7 +2,7 @@
 set -e
 
 # Simple backup script for Docker volumes and databases
-BACKUP_DIR="/opt/backups"
+BACKUP_DIR="/srv/backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p "$BACKUP_DIR"
