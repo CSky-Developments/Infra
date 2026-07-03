@@ -1,52 +1,57 @@
-# Infrastructure
+# CSky Infrastructure Wiki
 
-A simple, clean, and production-ready infrastructure repository for a single VPS deployment.
+> The single source of truth for CSky's production infrastructure.
 
-## Purpose
+## Repository Overview
+This repository contains the configuration, orchestration, and documentation for the entire CSky infrastructure platform. It governs how the VPS is provisioned, how the proxy routes traffic, and strictly defines the standards every application must follow.
 
-This repository contains the foundational infrastructure for deploying multiple containerized services on a single Ubuntu VPS. It uses `nginx-proxy` and `acme-companion` to provide automated routing and free SSL certificates (via Let's Encrypt) to any Docker container.
-
-The goal is to keep things minimal and easy to understand without over-engineering.
+## Architecture Overview
+```mermaid
+graph TD
+    Internet((Internet)) --> Proxy[Nginx Proxy Network]
+    Proxy --> Nginx[Nginx Proxy :80/443]
+    Proxy --> Acme[ACME Companion]
+    
+    subgraph /srv/services
+        Nginx --> App1[App 1 Container]
+        Nginx --> App2[App 2 Container]
+    end
+    
+    subgraph /srv/infra
+        Nginx
+        Acme
+    end
+```
 
 ## Folder Structure
-
-```
-infra/
-├── proxy/          # Nginx proxy & SSL termination setup
-├── scripts/        # Utility scripts (backups, restores, etc.)
-├── docs/           # Documentation (setup, deployment)
-├── .gitignore
-├── .editorconfig
-├── LICENSE
-└── README.md
+```text
+/
+├── proxy/          # Core reverse proxy (nginx-proxy + acme-companion)
+├── scripts/        # Utility and backup scripts
+├── docs/           # Internal Engineering Wiki
+└── ...
 ```
 
-## Getting Started
+## Quick Start
+1. **New to the project?** Start with [Getting Started](docs/GETTING_STARTED.md).
+2. **Setting up a new server?** See [VPS Setup](docs/VPS_SETUP.md).
+3. **Deploying a new service?** Read the [Service Standard](docs/SERVICE_STANDARD.md) and [Deployment Guide](docs/DEPLOYMENT.md).
 
-1. **Server Setup**: Provision a fresh Ubuntu VPS and follow the [VPS Setup Guide](docs/VPS_SETUP.md).
-2. **Start the Proxy**:
-   ```bash
-   cd /srv/infra/proxy
-   cp .env.example .env
-   # Edit .env and set ACME_DEFAULT_EMAIL
-   docker compose up -d
-   ```
-3. **Deploy Services**: Follow the [Deployment Workflow](docs/DEPLOYMENT.md) to add services.
-4. **Updates**: All updates are managed via Git. Simply `git pull` the latest changes and run `docker compose up -d` in the affected directory.
+## Documentation Index
 
-## How to Add a New Service
+### Core Architecture
+- [Architecture & History](docs/ARCHITECTURE.md)
+- [Reverse Proxy](docs/REVERSE_PROXY.md)
+- [Service Standard](docs/SERVICE_STANDARD.md)
+- [Filesystem Permissions](docs/PERMISSIONS.md)
 
-To expose a new service via the proxy, just add the `VIRTUAL_HOST` and `LETSENCRYPT_HOST` environment variables to its Docker container. 
+### Operations
+- [Deployment Workflow](docs/DEPLOYMENT.md)
+- [CI/CD Standard](docs/CI_CD.md)
+- [Daily Operations](docs/OPERATIONS.md)
+- [Migration Guide](docs/MIGRATION.md)
 
-Example `docker-compose.yml` for a new service:
-```yaml
-version: '3.8'
-services:
-  web:
-    image: nginx:alpine
-    environment:
-      - VIRTUAL_HOST=example.yourdomain.com
-      - LETSENCRYPT_HOST=example.yourdomain.com
-```
-
-When you start this service, the proxy will automatically route `example.yourdomain.com` to it and secure it with SSL.
+### Support
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Disaster Recovery](docs/DISASTER_RECOVERY.md)
+- [Changelog & Commits](docs/CHANGELOG_GUIDE.md)
