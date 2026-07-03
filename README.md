@@ -26,12 +26,13 @@ infra/
 1. **Server Setup**: Provision a fresh Ubuntu VPS and follow the [VPS Setup Guide](docs/VPS_SETUP.md).
 2. **Start the Proxy**:
    ```bash
-   cd proxy
+   cd /srv/infra/proxy
    cp .env.example .env
    # Edit .env and set ACME_DEFAULT_EMAIL
    docker compose up -d
    ```
 3. **Deploy Services**: Follow the [Deployment Workflow](docs/DEPLOYMENT.md) to add services.
+4. **Updates**: All updates are managed via Git. Simply `git pull` the latest changes and run `docker compose up -d` in the affected directory.
 
 ## How to Add a New Service
 

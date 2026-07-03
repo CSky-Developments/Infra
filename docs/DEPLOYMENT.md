@@ -9,9 +9,11 @@ We use an external Docker network named `proxy` to connect applications to the r
 
 ## Deploying a New Service
 
-1. Create a directory for your service (e.g., `/srv/services/my-app`).
-2. Create a `docker-compose.yml` in that directory.
-3. Configure it to be picked up by the proxy:
+1. Clone your application's Git repository into the services directory (e.g., `/srv/services/my-app`):
+```bash
+git clone <your-repo-url> /srv/services/my-app
+```
+2. Ensure the `docker-compose.yml` inside that repository is configured to be picked up by the proxy:
 
 ```yaml
 version: '3.8'
@@ -31,10 +33,22 @@ networks:
     external: true
 ```
 
-4. Start the service:
+4. Start or update the service:
 ```bash
 cd /srv/services/my-app
+git pull  # if updating an existing deployment
 docker compose up -d
 ```
 
 The `nginx-proxy` will automatically detect the new container, generate a Let's Encrypt certificate for `app.mydomain.com` (assuming DNS is configured), and start routing traffic to it.
+
+## Updating the Infrastructure
+
+To update the reverse proxy or infrastructure scripts, pull the latest changes in the infrastructure repository:
+
+```bash
+cd /srv/infra
+git pull
+cd proxy
+docker compose up -d
+```
