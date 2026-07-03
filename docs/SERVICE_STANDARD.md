@@ -17,15 +17,26 @@ Every service repository must follow this structure exactly:
 /
 ├── infra/
 │   ├── docker-compose.yml
-│   ├── .env
-│   └── data/
+│   └── .env
+├── data/
+├── keys/
+├── backups/
 ├── src/
 └── Dockerfile
+
+Application repositories should not invent their own layouts. Every service must conform to this self-contained structure.
 ```
 
 ### 2. Docker Compose File
 Must be located at `infra/docker-compose.yml`.
-Must define the `proxy` network and use the PUID/PGID model.
+- **Project Name**: Must define `name: <service-name>` at the top to prevent namespace collisions.
+- **Networks**: Must attach to the shared `proxy` network for external traffic.
+- **User Mapping**: Must enforce `user: "${PUID}:${PGID}"` (see [PERMISSIONS.md](PERMISSIONS.md)).
+- **Environment**: Must consume configuration via an `env_file`.
+- **Restart Policy**: Must be set to `unless-stopped` or `always`.
+- **Logging**: Must limit the json-file driver (e.g. max-size 10m).
+- **Resources**: Must define reasonable memory/cpu limits.
+- **Orphan Containers**: Always deploy with `docker compose up -d --remove-orphans`.
 
 ### 3. Deployment User Standard
 - Services run as the host deployment user (`csky`).
@@ -40,9 +51,14 @@ See [PERMISSIONS.md](PERMISSIONS.md) for implementation details.
 ### 4. CI/CD
 Must use GitHub Actions to build and push to GHCR. See [CI_CD.md](CI_CD.md).
 
-### 5. Volumes & Data
-All persistent data must be bind-mounted into `./data/` (relative to the compose file in the `infra/` directory).
-Temporary files that do not need persistence must be written to `/tmp` inside the container.
+### 5. Volumes & Persistent Data
+All persistent service data must reside under `/srv/services/<service>/`.
+Standardize local mounts relative to the compose file:
+- `../data:/app/data` (mapped to `/srv/services/<service>/data`)
+- `../keys:/app/keys` (mapped to `/srv/services/<service>/keys`)
+- `../backups:/app/backups` (mapped to `/srv/services/<service>/backups`)
+
+All host data directories must be owned by `csky:csky`. Temporary files that do not need persistence must be written to `/tmp` inside the container.
 
 ### 6. Ports
 Services should only expose ports internally to the `proxy` network via `VIRTUAL_PORT`. Do not bind ports to the host (e.g., `8080:80`) unless absolutely necessary for external non-HTTP access.
@@ -53,6 +69,18 @@ Use the default Docker json-file driver. Ensure applications log to `stdout` and
 ### 8. Naming Conventions
 - Repositories: kebab-case (e.g., `user-service`).
 - Container names: matching the repository name.
+
+### 9. Health Endpoints
+Every backend service must expose a standard health endpoint.
+- **Route**: `GET /health`
+- **Response**: HTTP 200 OK with JSON `{"status": "ok"}`
+This is mandatory for use in the [Deployment Verification Checklist](DEPLOYMENT_VERIFICATION.md).
+
+### 10. Node + Prisma + Alpine Standard
+When deploying Node.js services using Prisma on Alpine Linux, you must satisfy these compatibility requirements discovered in production:
+- **OS Dependency**: Install `openssl` inside the Alpine Docker image (`apk add --no-cache openssl`).
+- **Prisma Configuration**: Define `binaryTargets = ["native", "linux-musl-openssl-3.0.x"]` in your `schema.prisma`.
+- **Docker Build**: Ensure Prisma client generation runs during the docker build stage after installing OpenSSL.
 
 ## Common Mistakes
 - Placing `docker-compose.yml` at the root of the repository instead of `infra/`.
