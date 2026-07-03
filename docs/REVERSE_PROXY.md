@@ -12,17 +12,27 @@ We use `nginx-proxy` and `acme-companion`. They monitor the Docker daemon for co
 ## Step-by-Step Instructions
 
 ### Adding a New Service
-In your service's `infra/docker-compose.yml`:
+Every public HTTP service must define these variables and join the shared proxy network. In your service's `infra/docker-compose.yml`:
 ```yaml
 environment:
   - VIRTUAL_HOST=app.csky.com
+  - VIRTUAL_PORT=8080
   - LETSENCRYPT_HOST=app.csky.com
+  - LETSENCRYPT_EMAIL=admin@csky.com
 networks:
   - proxy
 ```
 
+## Verifying Successful Routing
+To verify the proxy is correctly routing traffic to your container, execute:
+```bash
+curl -I https://app.csky.com
+```
+You should receive an HTTP 200 OK or 3xx redirect. If you receive a 502 Bad Gateway, the proxy sees the container but the container is not responding on the specified `VIRTUAL_PORT`.
+
 ## Common Mistakes
 - Forgetting to attach the `proxy` network to the container.
+- Missing `VIRTUAL_PORT` when the application does not listen on the default port 80.
 - DNS not pointing to the VPS before the container starts, causing Let's Encrypt to fail the challenge.
 
 ## Troubleshooting

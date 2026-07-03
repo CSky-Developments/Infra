@@ -12,6 +12,8 @@ Refer to this when configuring a new container or troubleshooting `Permission De
 - Numeric UIDs must never be assumed.
 - UID `1000` must never be hardcoded.
 - Files under `/srv` must always be owned by `csky:csky`.
+- Bind-mounted files must remain owned by `csky:csky`.
+- Containers must never rely on root ownership for persistent data.
 - Service repositories must inherit these standards from the Infrastructure Repository instead of redefining them.
 
 ## How does it work?
@@ -58,6 +60,7 @@ We mandate `user: "${PUID}:${PGID}"`. We do **not** provide fallbacks (`${PUID:-
 
 ## Troubleshooting
 - **Error: missing mandatory variable**: Ensure the `.env` file exists in the directory where you run `docker compose up`.
+- **EACCES: permission denied**: The host data directory was likely auto-created by Docker as root. Stop the container, `sudo chown -R csky:csky ./data`, and start it again.
 
 ## Related Documentation
 - [Service Standard](SERVICE_STANDARD.md)
