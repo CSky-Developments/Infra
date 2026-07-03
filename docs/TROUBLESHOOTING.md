@@ -9,7 +9,7 @@ To preserve institutional knowledge of every failure mode we encountered while b
 - **Symptoms**: Container crashes immediately or logs show `EACCES: permission denied, mkdir '/app/data'`.
 - **Root Cause**: The container user does not own the host directory.
 - **Diagnosis**: Run `ls -la ./data` on the host. Compare ownership against `id -u`.
-- **Resolution**: Ensure `.env` contains `PUID=1000` and `PGID=1000`. Run `sudo chown -R deploy:deploy ./data`.
+- **Resolution**: Ensure `.env` contains `PUID=<uid-of-csky>` and `PGID=<gid-of-csky>`. Run `sudo chown -R csky:csky ./data`.
 - **Prevention**: Use our fail-fast standard (`user: "${PUID}:${PGID}"`) without defaults.
 
 ### 2. Missing .env Variables
@@ -44,7 +44,7 @@ To preserve institutional knowledge of every failure mode we encountered while b
 - **Symptoms**: `git pull` prompts for a password.
 - **Root Cause**: SSH key not added to GitHub or wrong key used.
 - **Diagnosis**: `ssh -T git@github.com`.
-- **Resolution**: Add `/home/deploy/.ssh/id_ed25519.pub` to GitHub.
+- **Resolution**: Add `/home/csky/.ssh/id_ed25519.pub` to GitHub.
 
 ## Related Documentation
 - [Disaster Recovery](DISASTER_RECOVERY.md)

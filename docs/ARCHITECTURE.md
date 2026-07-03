@@ -24,9 +24,9 @@ When proposing systemic changes, onboarding engineers, or resolving disputes abo
 - **Decision**: Images are built via GitHub Actions and stored in GHCR (GitHub Container Registry).
 - **Why**: Simplifies secret management and natively integrates with our source code. It prevents the VPS from wasting CPU cycles building images locally.
 
-### 5. PUID/PGID Standardization
-- **Decision**: All containers map host users via `user: "${PUID}:${PGID}"`.
-- **Why**: It natively solves Docker bind-mount permissions without insecure `chmod 777` or complex entrypoint scripts. The container process reads and writes exactly as the `deploy` user. We "fail fast" without defaults.
+### 5. Filesystem Permissions & Security Standard
+- **Decision**: All application containers must map their runtime user to the host's `csky` user via the Compose `user: "${PUID}:${PGID}"` directive. Containers must never run as root.
+- **Reasoning**: This eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. By dropping default values, we enforce a "fail fast" methodology: if PUID/PGID are missing from the `.env`, the deployment fails immediately rather than silently running under the wrong ID. The infrastructure must NEVER hardcode numeric UIDs. Numeric UIDs vary across cloud images (e.g., 1000 might be `ubuntu` on one system and `csky` on another); forcing an explicit environment variable ensures total portability across heterogeneous VPS environments.
 
 ### 6. Services Own Their `infra` Folder
 - **Decision**: Every service repository contains an `infra/` directory holding its `docker-compose.yml` and `data/`.

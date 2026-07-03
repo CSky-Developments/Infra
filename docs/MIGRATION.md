@@ -35,9 +35,9 @@ We stop the legacy service, refactor its directory layout to match the `infra/` 
        user: "${PUID}:${PGID}"
    ```
 5. **Correct Host Permissions**
-   Recursively `chown` the data directory to the `deploy` user.
+   Recursively `chown` the data directory to the `csky` deployment user.
    ```bash
-   sudo chown -R deploy:deploy infra/data
+   sudo chown -R csky:csky infra/data
    ```
 6. **Restart Service**
    ```bash

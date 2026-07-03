@@ -29,7 +29,7 @@ sequenceDiagram
 ## Step-by-Step Instructions
 
 1. **GitHub Secrets**: Add `VPS_SSH_KEY`, `VPS_HOST`, and `VPS_USER` to your repository secrets.
-2. **GHCR Authentication**: Ensure the VPS `deploy` user is authenticated to GHCR using a Personal Access Token (PAT).
+2. **GHCR Authentication**: Ensure the VPS `csky` user is authenticated to GHCR using a Personal Access Token (PAT).
 3. **Action Workflow**: Place the standard workflow in `.github/workflows/deploy.yml`.
 
 ## Common Mistakes
@@ -37,7 +37,7 @@ sequenceDiagram
 - **SSH Key**: Using a key with a passphrase. CI/CD SSH keys must be passwordless.
 
 ## Troubleshooting
-- **GHCR Pull Fails on VPS**: The VPS `deploy` user's PAT may have expired. Regenerate it and `docker login ghcr.io`.
+- **GHCR Pull Fails on VPS**: The VPS `csky` user's PAT may have expired. Regenerate it and `docker login ghcr.io`.
 
 ## Related Documentation
 - [Deployment Workflow](DEPLOYMENT.md)

@@ -28,7 +28,7 @@ Must be located at `infra/docker-compose.yml`.
 Must define the `proxy` network and use the PUID/PGID model.
 
 ### 3. Permissions
-Must enforce `user: "${PUID}:${PGID}"`. See [PERMISSIONS.md](PERMISSIONS.md).
+Must enforce `user: "${PUID}:${PGID}"`. Never hardcode numeric UIDs like 1000, as the host deployment user's UID varies across VPS providers. See [PERMISSIONS.md](PERMISSIONS.md).
 
 ### 4. CI/CD
 Must use GitHub Actions to build and push to GHCR. See [CI_CD.md](CI_CD.md).

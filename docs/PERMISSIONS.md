@@ -7,24 +7,28 @@ To explain the mechanism we use to prevent Docker bind-mount permission errors w
 Refer to this when configuring a new container or troubleshooting `Permission Denied` errors in logs.
 
 ## How does it work?
-By default, Docker containers run as `root`. If a root container creates a file in a bind-mounted directory (e.g., `infra/data/`), that file is owned by `root` on the VPS host, meaning the `deploy` user cannot modify or back it up easily.
+By default, Docker containers run as `root`. If a root container creates a file in a bind-mounted directory (e.g., `infra/data/`), that file is owned by `root` on the VPS host, meaning the `csky` user cannot modify or back it up easily.
 
-If we map the `user:` in compose to the `deploy` user's UID and GID (PUID/PGID), the container's process runs securely as that unprivileged user.
+If we map the `user:` in compose to the `csky` host deployment user's UID and GID (PUID/PGID), the container's process runs securely as that unprivileged user.
+
+### Why we NEVER assume UID 1000
+Modern Ubuntu cloud images automatically create a default `ubuntu` user as UID 1000. As a result, when we create our `csky` deployment user, it is frequently assigned UID 1001. Assuming UID 1000 is incorrect and not portable across VPS providers. The infrastructure must NEVER hardcode numeric UIDs. All persistent data under `/srv` must be owned by `csky:csky`, whatever those numeric IDs happen to be.
 
 ### Fail-Fast Implementation
 We mandate `user: "${PUID}:${PGID}"`. We do **not** provide fallbacks (`${PUID:-1000}`). If the variables are missing, deployment fails instantly.
 
 ## Step-by-Step Instructions
 
-1. Identify the `deploy` user's UID and GID on the VPS:
+1. Identify the host deployment user's (`csky`) UID and GID on the VPS:
    ```bash
-   id -u deploy # e.g. 1000
-   id -g deploy # e.g. 1000
+   id csky
+   id -u csky # e.g., 1001
+   id -g csky # e.g., 1001
    ```
-2. Create `.env` in the `infra/` directory:
+2. Populate `.env` in the `infra/` directory with those exact values:
    ```env
-   PUID=1000
-   PGID=1000
+   PUID=1001
+   PGID=1001
    ```
 3. Use it in `infra/docker-compose.yml`:
    ```yaml
@@ -42,7 +46,7 @@ We mandate `user: "${PUID}:${PGID}"`. We do **not** provide fallbacks (`${PUID:-
 
 ## Common Mistakes
 - Using `chmod 777 ./data` to "fix" permissions. Never do this.
-- Hardcoding `user: 1000:1000` in the compose file. Use the variables.
+- Hardcoding `user: 1000:1000` in the compose file. Use the variables mapped to the host deployment user.
 
 ## Troubleshooting
 - **Error: missing mandatory variable**: Ensure the `.env` file exists in the directory where you run `docker compose up`.

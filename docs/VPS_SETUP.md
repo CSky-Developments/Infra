@@ -12,15 +12,15 @@ It configures the OS, establishes security perimeters, installs Docker, creates 
 ## Step-by-Step Instructions
 
 ### 1. Base OS & User Setup
-Create the `deploy` user and assign sudo access.
+Create the `csky` deployment user and assign sudo access.
 ```bash
 apt update && apt upgrade -y
-adduser deploy
-usermod -aG sudo deploy
+adduser csky
+usermod -aG sudo csky
 ```
 
 ### 2. SSH Security & Fail2Ban
-Disable root login and passwords. Ensure your SSH key is in `/home/deploy/.ssh/authorized_keys`.
+Disable root login and passwords. Ensure your SSH key is in `/home/csky/.ssh/authorized_keys`.
 ```bash
 apt install fail2ban -y
 systemctl enable --now fail2ban
@@ -42,7 +42,7 @@ Install Docker and create the `proxy` network.
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-usermod -aG docker deploy
+usermod -aG docker csky
 docker network create proxy
 ```
 
@@ -50,17 +50,17 @@ docker network create proxy
 ```bash
 mkdir -p /srv/infra
 mkdir -p /srv/services
-chown -R deploy:deploy /srv/infra /srv/services
+chown -R csky:csky /srv/infra /srv/services
 ```
 
 ### 6. GitHub SSH Authentication
-Generate an SSH key for the `deploy` user and add it to GitHub to allow `git clone/pull` without passwords.
+Generate an SSH key for the `csky` user and add it to GitHub to allow `git clone/pull` without passwords.
 ```bash
-sudo -u deploy ssh-keygen -t ed25519 -C "vps-deploy@csky"
-cat /home/deploy/.ssh/id_ed25519.pub
+sudo -u csky ssh-keygen -t ed25519 -C "vps-csky@csky"
+cat /home/csky/.ssh/id_ed25519.pub
 # Add this key to GitHub -> Settings -> SSH Keys
 # Test connection:
-sudo -u deploy ssh -T git@github.com
+sudo -u csky ssh -T git@github.com
 ```
 
 Clone the infrastructure repository to `/srv/infra`.

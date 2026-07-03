@@ -12,7 +12,7 @@ We treat the VPS as a collection of Git repositories. Deployments are executed b
 ## Step-by-Step Instructions
 
 ### Deploying a New Service
-1. SSH into the VPS as `deploy`.
+1. SSH into the VPS as `csky`.
 2. `git clone <repo> /srv/services/<app-name>`
 3. Set up `.env` inside `/srv/services/<app-name>/infra/` (must include PUID/PGID).
 4. `cd /srv/services/<app-name>/infra && docker compose up -d`
