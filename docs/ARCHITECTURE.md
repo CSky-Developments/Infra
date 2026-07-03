@@ -24,8 +24,14 @@ When proposing systemic changes, onboarding engineers, or resolving disputes abo
 - **Decision**: Images are built via GitHub Actions and stored in GHCR (GitHub Container Registry).
 - **Why**: Simplifies secret management and natively integrates with our source code. It prevents the VPS from wasting CPU cycles building images locally.
 
-### 5. Filesystem Permissions & Security Standard
-- **Decision**: All application containers must map their runtime user to the host's `csky` user via the Compose `user: "${PUID}:${PGID}"` directive. Containers must never run as root.
+### 5. Deployment User Standard
+- **Decision**: 
+  - Services run as the host deployment user (`csky`).
+  - Containers must consume `PUID` and `PGID` supplied by the infrastructure.
+  - Numeric UIDs must never be assumed.
+  - UID `1000` must never be hardcoded.
+  - Files under `/srv` must always be owned by `csky:csky`.
+  - Service repositories must inherit these standards from the Infrastructure Repository instead of redefining them.
 - **Reasoning**: This eliminates bind-mount permission conflicts without resorting to insecure `chmod 777` or complex entrypoint `chown` scripts. By dropping default values, we enforce a "fail fast" methodology: if PUID/PGID are missing from the `.env`, the deployment fails immediately rather than silently running under the wrong ID. The infrastructure must NEVER hardcode numeric UIDs. Numeric UIDs vary across cloud images (e.g., 1000 might be `ubuntu` on one system and `csky` on another); forcing an explicit environment variable ensures total portability across heterogeneous VPS environments.
 
 ### 6. Services Own Their `infra` Folder

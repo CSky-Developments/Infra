@@ -6,6 +6,14 @@ To explain the mechanism we use to prevent Docker bind-mount permission errors w
 ## When should it be used?
 Refer to this when configuring a new container or troubleshooting `Permission Denied` errors in logs.
 
+## Deployment User Standard
+- Services run as the host deployment user (`csky`).
+- Containers must consume `PUID` and `PGID` supplied by the infrastructure.
+- Numeric UIDs must never be assumed.
+- UID `1000` must never be hardcoded.
+- Files under `/srv` must always be owned by `csky:csky`.
+- Service repositories must inherit these standards from the Infrastructure Repository instead of redefining them.
+
 ## How does it work?
 By default, Docker containers run as `root`. If a root container creates a file in a bind-mounted directory (e.g., `infra/data/`), that file is owned by `root` on the VPS host, meaning the `csky` user cannot modify or back it up easily.
 

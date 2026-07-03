@@ -27,8 +27,15 @@ Every service repository must follow this structure exactly:
 Must be located at `infra/docker-compose.yml`.
 Must define the `proxy` network and use the PUID/PGID model.
 
-### 3. Permissions
-Must enforce `user: "${PUID}:${PGID}"`. Never hardcode numeric UIDs like 1000, as the host deployment user's UID varies across VPS providers. See [PERMISSIONS.md](PERMISSIONS.md).
+### 3. Deployment User Standard
+- Services run as the host deployment user (`csky`).
+- Containers must consume `PUID` and `PGID` supplied by the infrastructure.
+- Numeric UIDs must never be assumed.
+- UID `1000` must never be hardcoded.
+- Files under `/srv` must always be owned by `csky:csky`.
+- Service repositories must inherit these standards from the Infrastructure Repository instead of redefining them.
+
+See [PERMISSIONS.md](PERMISSIONS.md) for implementation details.
 
 ### 4. CI/CD
 Must use GitHub Actions to build and push to GHCR. See [CI_CD.md](CI_CD.md).
