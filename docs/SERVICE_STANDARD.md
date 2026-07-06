@@ -27,8 +27,9 @@ Every service repository must follow this structure exactly:
 Application repositories should not invent their own layouts. Every service must conform to this self-contained structure.
 ```
 
-### 2. Docker Compose File
-Must be located at `infra/docker-compose.yml`.
+### 2. Configuration Files (`docker-compose.yml` & `.env`)
+- The compose file must be located at `infra/docker-compose.yml` and define the `proxy` network.
+- An accompanying `infra/.env` (or `.env.example`) file MUST always be generated containing `PUID=` and `PGID=` placeholders so the deployment doesn't instantly fail.
 - **Project Name**: Must define `name: <service-name>` at the top to prevent namespace collisions.
 - **Networks**: Must attach to the shared `proxy` network for external traffic.
 - **User Mapping**: Must enforce `user: "${PUID}:${PGID}"` (see [PERMISSIONS.md](PERMISSIONS.md)).

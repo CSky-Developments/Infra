@@ -34,6 +34,7 @@ This repository is the **single source of truth** for the intended infrastructur
 - **Permissions (PUID/PGID)**:
   - All application containers *must* define `user: "${PUID}:${PGID}"` in their compose files to prevent bind-mount permission errors. We strictly fail-fast with no default values (`${PUID:-1000}` is forbidden).
   - Never assume UID 1000.
+  - **AGENT INSTRUCTION**: When generating a `docker-compose.yml` file for the user, you MUST simultaneously generate an accompanying `.env` (or `.env.example`) file in the same directory that explicitly defines `PUID=` and `PGID=` so the user can easily edit it. Do not leave the user to create the `.env` file themselves.
 - **Proxy Environment**:
   - Public HTTP services require reverse proxy variables (`VIRTUAL_HOST`, `VIRTUAL_PORT`, `LETSENCRYPT_HOST`, `LETSENCRYPT_EMAIL`).
 - **Databases**:
