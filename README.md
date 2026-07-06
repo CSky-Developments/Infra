@@ -50,6 +50,7 @@ graph TD
 - [Test Environments (MC/Discord)](docs/TEST_ENVIRONMENTS.md)
 - [CI/CD Standard](docs/CI_CD.md)
 - [Daily Operations](docs/OPERATIONS.md)
+- [Local Agent Operations](docs/AGENT_OPERATIONS.md)
 - [Migration Guide](docs/MIGRATION.md)
 
 ### Support

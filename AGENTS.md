@@ -17,6 +17,7 @@ This repository is the **single source of truth** for the intended infrastructur
    4. Affected documentation.
    5. Commit details (using Conventional Commits).
 6. **Never Redesign Infrastructure**: Inherit standards instead of redefining them.
+7. **Read-Only Observability**: The AI may execute SSH commands against the VPS to inspect logs (`docker compose logs`), view container states (`docker ps`), and read configurations. **The AI is strictly forbidden from mutating the VPS via SSH** (no `rm`, `nano`, `docker compose down`, etc). All fixes must be written to the repository and deployed via Git.
 7. **Verify Deployments**: Executing the Deployment Verification Checklist is mandatory after deploying.
 
 ## Architecture Context
