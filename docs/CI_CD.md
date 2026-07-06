@@ -38,8 +38,9 @@ sequenceDiagram
 ### Scaling to Multiple Services (Reusing Credentials)
 When deploying a second service (e.g., `plugin-crafter`), you **do not** need to generate a new SSH key on the VPS. 
 
-**Method A: GitHub Organization Secrets (Recommended)**
+**Method A: GitHub Organization Secrets**
 If all your repositories live under the same GitHub Organization, configure `VPS_SSH_KEY`, `VPS_HOST`, and `VPS_USER` as **Organization Secrets** instead of Repository Secrets. Every repository will automatically inherit them, requiring zero setup for new services.
+*(Note: GitHub only allows Organization Secrets to be shared with private repositories if you are on a paid GitHub Team/Enterprise plan. If you are using the free tier for private repositories, you must use Method B).*
 
 **Method B: Retrieve Existing Key from VPS**
 If you are using personal repositories, you must copy the existing SSH private key from the VPS into the new repository's secrets.
