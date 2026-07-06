@@ -6,9 +6,12 @@ To explain how to deploy temporary test environments—such as a Minecraft serve
 ## When should it be used?
 When a developer needs to spin up a test instance without breaking the platform's security, routing, or permission rules.
 
-## Scenario: Minecraft Plugin & Discord Bot Test Server
+## Strict Naming Convention
+**Mandatory Rule**: Any ephemeral test repository or service deployed to the infrastructure MUST be suffixed with `-test`. For example: `csky-mc-test`, `discord-bot-test`, or `backend-api-test`. This ensures test environments are never confused with production services.
 
-Suppose you need to test a Minecraft plugin that communicates with a website or a Discord bot. 
+## Scenario: Minecraft, Discord, and Scripts
+
+Test environments are not limited to websites and Discord bots; they can include Python scripts, background workers, databases, or anything else you need to containerize. Suppose you need to test a Minecraft plugin that communicates with a website, a Discord bot, and a custom background script. 
 
 ### 1. Repository Setup
 Even for a temporary test server, you must follow the [Service Standard](SERVICE_STANDARD.md). Create a directory for it on the VPS:
@@ -67,6 +70,17 @@ services:
       - proxy
       - default
 
+  # 4. A Custom Standalone Script
+  test-script:
+    image: python:3.11-slim
+    user: "${PUID}:${PGID}"
+    volumes:
+      - ./data/scripts:/app
+    working_dir: /app
+    command: ["python", "test_runner.py"]
+    networks:
+      - default
+
 networks:
   proxy:
     external: true
@@ -88,7 +102,7 @@ docker compose up -d
 ```
 
 ## How this adheres to the CSky Constitution
-- **Filesystem**: The MC server, bot, and website all generate files as the `csky` user. All plugins, worlds, and bot databases generated in `./data/` are safely owned by `csky:csky`.
+- **Filesystem**: The MC server, bot, script, and website all generate files as the `csky` user. All plugins, worlds, and bot databases generated in `./data/` are safely owned by `csky:csky`.
 - **Isolation**: The MC server and Discord bot do not touch the `proxy` network since they don't serve HTTP traffic. Only the website connects to the proxy.
 - **Cleanup**: When testing is complete, simply run `docker compose down` and delete the `/srv/services/csky-mc-test` directory. No lingering root-owned files will block deletion.
 

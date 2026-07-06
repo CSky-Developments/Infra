@@ -69,6 +69,7 @@ Use the default Docker json-file driver. Ensure applications log to `stdout` and
 ### 8. Naming Conventions
 - Repositories: kebab-case (e.g., `user-service`).
 - Container names: matching the repository name.
+- **Test Environments**: Any ephemeral or testing service MUST be suffixed with `-test` (e.g., `csky-mc-test`).
 
 ### 9. Health Endpoints
 Every backend service must expose a standard health endpoint.
