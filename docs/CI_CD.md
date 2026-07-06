@@ -28,7 +28,10 @@ sequenceDiagram
 
 ## Step-by-Step Instructions
 
-1. **GitHub Secrets**: Add `VPS_SSH_KEY`, `VPS_HOST`, and `VPS_USER` to your repository secrets.
+1. **GitHub Secrets**: Add the following standard secrets to your repository (or Organization):
+   - `VPS_HOST`: The IP address or domain name of the Ubuntu server.
+   - `VPS_USER`: Must be `csky` (the canonical host deployment user).
+   - `VPS_SSH_KEY`: The raw private SSH key generated on the VPS (e.g., the contents of `/home/csky/.ssh/id_ed25519`).
 2. **GHCR Authentication**: Ensure the VPS `csky` user is authenticated to GHCR using a Personal Access Token (PAT).
 3. **Action Workflow**: Place the standard workflow in `.github/workflows/deploy.yml`.
 
