@@ -47,6 +47,7 @@ graph TD
 
 ### Operations
 - [Deployment Workflow](docs/DEPLOYMENT.md)
+- [Test Environments (MC/Discord)](docs/TEST_ENVIRONMENTS.md)
 - [CI/CD Standard](docs/CI_CD.md)
 - [Daily Operations](docs/OPERATIONS.md)
 - [Migration Guide](docs/MIGRATION.md)
