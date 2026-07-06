@@ -44,6 +44,6 @@ This repository is the **single source of truth** for the intended infrastructur
 ## State and Tracking
 
 The `docs/` folder is now a fully-fledged Internal Engineering Wiki. 
-- Refer to `docs/STATE.md` for a checklist of completed VPS tasks.
-- Refer to `docs/ARCHITECTURE.md` and `docs/SERVICE_STANDARD.md` for hard rules governing how services are built.
+- Refer to `docs/setup/STATE.md` for a checklist of completed VPS tasks.
+- Refer to `docs/architecture/ARCHITECTURE.md` and `docs/architecture/SERVICE_STANDARD.md` for hard rules governing how services are built.
 - Keep all documentation in `docs/` strictly synchronized with the reality of the platform.

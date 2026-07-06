@@ -50,6 +50,24 @@ We mandate `user: "${PUID}:${PGID}"`. We do **not** provide fallbacks (`${PUID:-
          - ./data:/app/data
    ```
 
+## Permanent Volume Fix (The SGID Bit)
+When you deploy a new container without creating the `./data` folder manually, the Docker daemon (running as root) will auto-create the missing bind-mounted directory as `root:root`. This immediately locks the `csky` user out. 
+
+To permanently prevent this across the entire `/srv/services/` directory, we use the Set-Group-ID (SGID) bit. Applying this forces all future files and folders created by Docker to inherit the `csky` group:
+
+```bash
+# 1. Take recursive ownership
+sudo chown -R csky:csky /srv/services/
+
+# 2. Grant the csky group write permissions
+sudo find /srv/services/ -type d -exec chmod 775 {} +
+sudo find /srv/services/ -type f -exec chmod 664 {} +
+
+# 3. Apply the SGID bit to all directories
+sudo find /srv/services/ -type d -exec chmod g+s {} +
+```
+Now, if Docker auto-creates a folder, it will be created as `root:csky`. Because the group is `csky` and has write permissions, your deployment user retains full access to the folder.
+
 ## Why we don't use Root or chmod 777
 - **Root**: Massive security risk. A container escape yields root host access.
 - **chmod 777**: Terrible security practice. Anyone can read, write, or execute files, violating the principle of least privilege.

@@ -33,27 +33,32 @@ graph TD
 ```
 
 ## Quick Start
-1. **New to the project?** Start with [Getting Started](docs/GETTING_STARTED.md).
-2. **Setting up a new server?** See [VPS Setup](docs/VPS_SETUP.md).
-3. **Deploying a new service?** Read the [Service Standard](docs/SERVICE_STANDARD.md) and [Deployment Guide](docs/DEPLOYMENT.md).
+1. **New to the project?** Start with [Getting Started](docs/setup/GETTING_STARTED.md).
+2. **Setting up a new server?** See [VPS Setup](docs/setup/VPS_SETUP.md).
+3. **Deploying a new service?** Read the [Service Standard](docs/architecture/SERVICE_STANDARD.md) and [Deployment Guide](docs/operations/DEPLOYMENT.md).
 
 ## Documentation Index
 
 ### Core Architecture
-- [Architecture & History](docs/ARCHITECTURE.md)
-- [Reverse Proxy](docs/REVERSE_PROXY.md)
-- [Service Standard](docs/SERVICE_STANDARD.md)
-- [Filesystem Permissions](docs/PERMISSIONS.md)
+- [Platform Architecture](docs/architecture/ARCHITECTURE.md)
+- [CSky Service Standard](docs/architecture/SERVICE_STANDARD.md)
+- [Permissions & Ownership](docs/architecture/PERMISSIONS.md)
+- [Reverse Proxy Layer](docs/architecture/REVERSE_PROXY.md)
+
+### Setup & State
+- [VPS Setup Guide](docs/setup/VPS_SETUP.md)
+- [Getting Started](docs/setup/GETTING_STARTED.md)
+- [Infrastructure State (Checklist)](docs/setup/STATE.md)
 
 ### Operations
-- [Deployment Workflow](docs/DEPLOYMENT.md)
-- [Test Environments (MC/Discord)](docs/TEST_ENVIRONMENTS.md)
-- [CI/CD Standard](docs/CI_CD.md)
-- [Daily Operations](docs/OPERATIONS.md)
-- [Local Agent Operations](docs/AGENT_OPERATIONS.md)
-- [Migration Guide](docs/MIGRATION.md)
+- [Deployment Workflow](docs/operations/DEPLOYMENT.md)
+- [Test Environments (MC/Discord)](docs/operations/TEST_ENVIRONMENTS.md)
+- [CI/CD Standard](docs/operations/CI_CD.md)
+- [Daily Operations](docs/operations/OPERATIONS.md)
+- [Local Agent Operations](docs/agents/AGENT_OPERATIONS.md)
+- [Migration Guide](docs/setup/MIGRATION.md)
 
 ### Support
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Disaster Recovery](docs/DISASTER_RECOVERY.md)
-- [Changelog & Commits](docs/CHANGELOG_GUIDE.md)
+- [Troubleshooting](docs/operations/TROUBLESHOOTING.md)
+- [Disaster Recovery](docs/operations/DISASTER_RECOVERY.md)
+- [Changelog Guide](docs/operations/CHANGELOG_GUIDE.md)
