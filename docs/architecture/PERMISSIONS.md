@@ -68,6 +68,11 @@ sudo find /srv/services/ -type d -exec chmod g+s {} +
 ```
 Now, if Docker auto-creates a folder, it will be created as `root:csky`. Because the group is `csky` and has write permissions, your deployment user retains full access to the folder.
 
+> [!TIP]
+> **Pro-Tip: Pre-Create Volume Folders**
+> Even with the SGID bit set, Docker's internal security rules (umask) will sometimes auto-create folders without giving the `csky` group write permissions (creating it as `rwxr-xr-x` instead of `rwxrwxr-x`). 
+> To completely avoid permission denied errors when adding brand-new volume mounts, **manually pre-create the folder** on the VPS (e.g., `mkdir -p ../data/new_folder`) *before* you run `docker compose up`. If your `csky` deployment user creates the folder first, it will own it perfectly from the start!
+
 ## Why we don't use Root or chmod 777
 - **Root**: Massive security risk. A container escape yields root host access.
 - **chmod 777**: Terrible security practice. Anyone can read, write, or execute files, violating the principle of least privilege.
