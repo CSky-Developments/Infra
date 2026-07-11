@@ -59,6 +59,9 @@ Standardize local mounts relative to the compose file:
 - `../keys:/app/keys` (mapped to `/srv/services/<service>/keys`)
 - `../backups:/app/backups` (mapped to `/srv/services/<service>/backups`)
 
+- All stateful data (databases, uploads, logs) **must** be mapped to host folders in the `../data/<service>` directory structure to ensure persistence across container restarts.
+- **Logging**: All services must follow the [Logging Standard](LOGGING_STANDARD.md), mapping `../data/logs:/app/logs` and rotating files on restart.
+
 All host data directories must be owned by `csky:csky`. Temporary files that do not need persistence must be written to `/tmp` inside the container.
 
 ### 6. Ports
