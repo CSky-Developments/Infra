@@ -22,7 +22,7 @@ When a service restarts or boots up, it must not blindly append to a massive, en
 - The active log file must be named `service.log`.
 - **On Startup:** The application logger must archive the *previous* `service.log` by renaming it with the timestamp of when it was stopped/rotated (e.g., `service-2026-07-11_10-15-30.log`).
 - **New Session:** A fresh `service.log` is created for the new running session.
-- (Optional but recommended): Implement a max-file limit (e.g., keep the last 14 days or last 10 restarts) to prevent storage exhaustion.
+- **Mandatory Retention Limit (7 Days):** The application logger must be configured to automatically delete archived log files that are older than 7 days to prevent the host's storage from eventually filling up.
 
 ### 4. Console & File Output
 Applications should output logs to **both** the console (`stdout`/`stderr`) and the file system. 
