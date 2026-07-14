@@ -64,8 +64,9 @@ services:
     image: my-mc-website:latest
     user: "${PUID}:${PGID}"
     environment:
-      - VIRTUAL_HOST=test-mc.csky.com
-      - LETSENCRYPT_HOST=test-mc.csky.com
+      - VIRTUAL_HOST=test-mc.csky.dev
+      - LETSENCRYPT_HOST=test-mc.csky.dev
+      - LETSENCRYPT_EMAIL=admin@csky.dev
     networks:
       - proxy
       - default

@@ -15,10 +15,10 @@ We use `nginx-proxy` and `acme-companion`. They monitor the Docker daemon for co
 Every public HTTP service must define these variables and join the shared proxy network. In your service's `infra/docker-compose.yml`:
 ```yaml
 environment:
-  - VIRTUAL_HOST=app.csky.com
-  - VIRTUAL_PORT=8080
-  - LETSENCRYPT_HOST=app.csky.com
-  - LETSENCRYPT_EMAIL=admin@csky.com
+  - VIRTUAL_HOST=app.csky.dev
+  - VIRTUAL_PORT=3000
+  - LETSENCRYPT_HOST=app.csky.dev
+  - LETSENCRYPT_EMAIL=admin@csky.dev
 networks:
   - proxy
 ```
@@ -26,7 +26,7 @@ networks:
 ## Verifying Successful Routing
 To verify the proxy is correctly routing traffic to your container, execute:
 ```bash
-curl -I https://app.csky.com
+curl -I https://app.csky.dev
 ```
 You should receive an HTTP 200 OK or 3xx redirect. If you receive a 502 Bad Gateway, the proxy sees the container but the container is not responding on the specified `VIRTUAL_PORT`.
 
