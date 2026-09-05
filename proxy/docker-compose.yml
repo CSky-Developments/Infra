@@ -10,6 +10,7 @@ services:
 
     volumes:
       - conf:/etc/nginx/conf.d
+      - ./conf.d/security.conf:/etc/nginx/conf.d/security.conf:ro
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
